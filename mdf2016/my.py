@@ -87,45 +87,42 @@ def dist2(lines):
         dmin = MAX_D
         #min_node = l[0]
 
+        v_min = MAX_D
+        k_min = ()
+
         for li in brow:
-            d2 = {k: v for k, v in filter(lambda t: li in t[0], Distances.items())}
-            t_node = min(d2, key=d2.get)
-            tmin = Distances[t_node]
-            if tmin < dmin:
-                min_node = t_node
-                dmin = tmin
+
+            for item in Distances.items():
+                k, v = item
+                if (k[0] in brow and k[1] not in brow) or (k[1] in brow and k[0] not in brow):
+                    if v < v_min:
+                        k_min = k
+                        v_min = v
+        if(k_min != ()):
+            if k_min[0] not in brow:
+                brow.append(k_min[0])
+            if k_min[1] not in brow:
+                brow.append(k_min[1])
+            prop[k_min] = Distances.pop(k_min)
+
+        print(k_min, v_min)
+
+            #d2 = {k: v for k, v in filter(lambda t: li in t[0] and t[0][0] not in brow, Distances.items())}
+            #t_node = min(d2, key=d2.get)
+            #tmin = Distances[t_node]
+            #if tmin < dmin:
+                #min_node = t_node
+                #dmin = tmin
         #d2 = {k: v for k, v in filter(lambda t: l in t[0], Distances.items())}
         #min_node = min(d2, key=d2.get)
         #print(Distances[min_node])
 
-        if min_node[0] not in brow:
-            brow.append(min_node[0])
-        if min_node[1] not in brow:
-            brow.append(min_node[1])
-        prop[min_node] = Distances.pop(min_node)
+
+        #prop[min_node] = Distances.pop(min_node)
 
         if len(prop) == len(lines) - 1:
             spanning = False
 
-
-
-        # print(list(prop))
-        # for li in list(prop):
-        #     for l in li:
-        #         # l = li[0]
-        #         for e in lines:
-        #             dx, dy = e[0] - l[0], e[1] - l[1]
-        #             d = math.sqrt(dx ** 2 + dy ** 2)
-        #
-        #             if e != l and d < dmin and l not in brow and e not in brow:
-        #                 min_node = e
-        #                 dmin = d
-        #         if isinstance(l, tuple) and isinstance(min_node, tuple):
-        #             brow.append(l)
-        #             brow.append(min_node)
-        #             prop[(l, min_node)] = dmin
-        #         if len(prop) == len(lines)-1:
-        #             spanning = False
     print("p> ",prop)
     for i in prop:
         l = i[0]
