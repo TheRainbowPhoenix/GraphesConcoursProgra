@@ -58,47 +58,80 @@ def init():
 
 def dist2(lines):
     global MAX_D
+    global Distances
     prop = {}
     brow = []
     spanning = True
 
     l = lines[0]
-    dmin = MAX_D
-    for e in lines:
-        dx, dy = e[0] - l[0], e[1] - l[1]
-        d = math.sqrt(dx ** 2 + dy ** 2)
 
-        if e != l and d < dmin and (l, e) not in brow and (e, l) not in brow:
-            min_node = e
-            dmin = d
-    if isinstance(l, tuple) and isinstance(min_node, tuple):
-        brow.append((l, min_node))
-        prop[(l, min_node)] = dmin
+    print(Distances)
+
+    d2 = {k: v for k, v in filter(lambda t: l in t[0], Distances.items())}
+
+    min_node = min(d2, key=d2.get)
+    dmin = Distances[min_node]
+    print(dmin)
+
+    #minval = 1
+    #print(list(filter(lambda x: Distances[x] == minval, Distances)))
+
+    #min(Distances, key=itemgetter(0))[0]
+
+    brow.append(min_node[0])
+    brow.append(min_node[1])
+    prop[min_node] = Distances.pop(min_node)
+
 
     while(spanning):
-        l = lines[0]
         dmin = MAX_D
-        min_node = l[0]
-        for li in list(prop):
-            #l = li[0]
-            for e in lines:
-                dx, dy = e[0] - l[0], e[1] - l[1]
-                d = math.sqrt(dx ** 2 + dy ** 2)
+        #min_node = l[0]
 
-                if e != l and d < dmin and (l, e) not in brow and (e, l) not in brow:
-                    min_node = e
-                    dmin = d
-            if isinstance(l, tuple) and isinstance(min_node, tuple):
-                brow.append((l, min_node))
-                prop[(l, min_node)] = dmin
-        if len(prop) == len(lines)-1:
+        for li in brow:
+            d2 = {k: v for k, v in filter(lambda t: li in t[0], Distances.items())}
+            t_node = min(d2, key=d2.get)
+            tmin = Distances[t_node]
+            if tmin < dmin:
+                min_node = t_node
+                dmin = tmin
+        #d2 = {k: v for k, v in filter(lambda t: l in t[0], Distances.items())}
+        #min_node = min(d2, key=d2.get)
+        #print(Distances[min_node])
+
+        if min_node[0] not in brow:
+            brow.append(min_node[0])
+        if min_node[1] not in brow:
+            brow.append(min_node[1])
+        prop[min_node] = Distances.pop(min_node)
+
+        if len(prop) == len(lines) - 1:
             spanning = False
+
+
+
+        # print(list(prop))
+        # for li in list(prop):
+        #     for l in li:
+        #         # l = li[0]
+        #         for e in lines:
+        #             dx, dy = e[0] - l[0], e[1] - l[1]
+        #             d = math.sqrt(dx ** 2 + dy ** 2)
+        #
+        #             if e != l and d < dmin and l not in brow and e not in brow:
+        #                 min_node = e
+        #                 dmin = d
+        #         if isinstance(l, tuple) and isinstance(min_node, tuple):
+        #             brow.append(l)
+        #             brow.append(min_node)
+        #             prop[(l, min_node)] = dmin
+        #         if len(prop) == len(lines)-1:
+        #             spanning = False
     print("p> ",prop)
     for i in prop:
         l = i[0]
-        min = i[1]
-        print(l, min)
-        add_line("e1cf0f", 1, l[0], l[1], min[0] - l[0], min[1] - l[1])
+        nmin = i[1]
+        #print(l, min)
+        add_line("e1cf0f", 1, l[0], l[1], nmin[0] - l[0], nmin[1] - l[1])
 
 
 def dist(lines):
@@ -121,7 +154,7 @@ def dist(lines):
                     # all[(l, e)] = d
 
                 #if d < dmin and (l, e) not in brow and (e, l) not in brow and not (True in [e == n[1] for n in brow]):
-                if d < dmin and (l, e) not in brow and (e, l) not in brow:
+                if d < dmin and (l, e) not in brow and (e, l) not in brow and not (True in [e == n[1] for n in brow]) and not (True in [e == n[0] for n in brow]):
                     min = e
                     dmin = d
 
@@ -147,8 +180,6 @@ def dist(lines):
     # print(Distances)
 
 
-
-
 def browse(lines):
     global OUT
     global MAX_D
@@ -168,6 +199,8 @@ def browse(lines):
                 dx, dy = e[0] - l[0], e[1] - l[1]
 
                 d = math.sqrt(dx ** 2 + dy ** 2)
+
+                Distances[(l, e)] = d
 
                 if dmin == 0:
                     dmin = d
@@ -219,9 +252,9 @@ if __name__ == '__main__':
     global OUT
     lin = init()
     browse(lin)
-    dist(lin)
+    #dist(lin)
 
-    #dist2(lin)
+    dist2(lin)
 
     circle(lin)
     finalize()
